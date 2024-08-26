@@ -11,7 +11,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Search, Phone, Mail, User, Shield, Zap, Target, ChevronDown, Menu } from "lucide-react"
+import { Search, Phone, Mail, User, Shield, Zap, Target, ChevronDown, Menu, Check } from "lucide-react"
 
 export default function Component() {
   const [searchType, setSearchType] = useState("phone")
@@ -51,20 +51,22 @@ export default function Component() {
         </div>
       </header>
       <main className="flex-grow flex flex-col">
-        <section className="flex-grow flex flex-col items-center justify-center p-8 relative">
-          <div className="w-full max-w-4xl text-center">
-            <h1 className="text-4xl sm:text-5xl font-bold mb-4 sm:mb-8">Uncover Intelligence with OSINT Pro</h1>
-            <p className="text-lg sm:text-xl text-muted-foreground mb-8 sm:mb-12">
+        <section className="flex flex-col items-center justify-start pt-16 sm:pt-24 min-h-screen p-4 sm:p-8 relative">
+          <div className="w-full max-w-2xl mb-12 sm:mb-16">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-center mb-4 sm:mb-6">Uncover Intelligence with OSINT Pro</h1>
+            <p className="text-lg sm:text-xl text-muted-foreground text-center mb-8 sm:mb-12">
               Powerful open-source intelligence tool for professionals and researchers
             </p>
-            <Tabs value={searchType} onValueChange={setSearchType} className="w-full mb-8">
-              <TabsList className="grid w-full max-w-md mx-auto grid-cols-3 mb-8">
+          </div>
+          <div className="w-full max-w-2xl">
+            <Tabs value={searchType} onValueChange={setSearchType} className="w-full">
+              <TabsList className="grid w-full grid-cols-3 mb-6">
                 <TabsTrigger value="phone">Phone</TabsTrigger>
                 <TabsTrigger value="email">Email</TabsTrigger>
                 <TabsTrigger value="username">Username</TabsTrigger>
               </TabsList>
               <TabsContent value="phone">
-                <div className="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-2 max-w-2xl mx-auto">
+                <div className="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-2">
                   <div className="relative w-full">
                     <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
                     <Input type="tel" placeholder="Enter phone number" className="pl-10 w-full" />
@@ -75,7 +77,7 @@ export default function Component() {
                 </div>
               </TabsContent>
               <TabsContent value="email">
-                <div className="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-2 max-w-2xl mx-auto">
+                <div className="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-2">
                   <div className="relative w-full">
                     <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
                     <Input type="email" placeholder="Enter email address" className="pl-10 w-full" />
@@ -86,7 +88,7 @@ export default function Component() {
                 </div>
               </TabsContent>
               <TabsContent value="username">
-                <div className="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-2 max-w-2xl mx-auto">
+                <div className="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-2">
                   <div className="relative w-full">
                     <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
                     <Input type="text" placeholder="Enter username" className="pl-10 w-full" />
@@ -102,7 +104,7 @@ export default function Component() {
             <ChevronDown className="h-8 w-8 text-muted-foreground" />
           </div>
         </section>
-        <section className="min-h-screen flex items-center justify-center bg-muted">
+        <section className="py-24 bg-muted">
           <div className="container mx-auto px-4">
             <h2 className="text-3xl font-bold text-center mb-12">Why Choose OSINT Pro?</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -139,14 +141,159 @@ export default function Component() {
             </div>
           </div>
         </section>
+        <section className="py-24 bg-background">
+          <div className="container mx-auto px-4">
+            <h2 className="text-3xl font-bold text-center mb-12">Pricing Plans</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Hobby</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-3xl font-bold mb-4">$5/month</p>
+                  <ul className="space-y-2">
+                    <li className="flex items-center">
+                      <Check className="mr-2 h-5 w-5 text-green-500" />
+                      <span>Limited searches</span>
+                    </li>
+                    <li className="flex items-center">
+                      <Check className="mr-2 h-5 w-5 text-green-500" />
+                      <span>Basic data sources</span>
+                    </li>
+                  </ul>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardHeader>
+                  <CardTitle>Professional</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-3xl font-bold mb-4">$20/month</p>
+                  <ul className="space-y-2">
+                    <li className="flex items-center">
+                      <Check className="mr-2 h-5 w-5 text-green-500" />
+                      <span>Unlimited searches</span>
+                    </li>
+                    <li className="flex items-center">
+                      <Check className="mr-2 h-5 w-5 text-green-500" />
+                      <span>Advanced data sources</span>
+                    </li>
+                    <li className="flex items-center">
+                      <Check className="mr-2 h-5 w-5 text-green-500" />
+                      <span>Custom alerts</span>
+                    </li>
+                  </ul>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardHeader>
+                  <CardTitle>Pro</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-3xl font-bold mb-4">$50/month</p>
+                  <ul className="space-y-2">
+                    <li className="flex items-center">
+                      <Check className="mr-2 h-5 w-5 text-green-500" />
+                      <span>All Professional features</span>
+                    </li>
+                    <li className="flex items-center">
+                      <Check className="mr-2 h-5 w-5 text-green-500" />
+                      <span>API access</span>
+                    </li>
+                    <li className="flex items-center">
+                      <Check className="mr-2 h-5 w-5 text-green-500" />
+                      <span>Advanced analytics</span>
+                    </li>
+                    <li className="flex items-center">
+                      <Check className="mr-2 h-5 w-5 text-green-500" />
+                      <span>Priority support</span>
+                    </li>
+                  </ul>
+                </CardContent>
+              </Card>
+            </div>
+            <div className="mt-12 text-center">
+              <Button size="lg" asChild>
+                <a href="/pricing">View Full Pricing Details</a>
+              </Button>
+            </div>
+          </div>
+        </section>
+        <section className="py-24 bg-muted">
+          <div className="container mx-auto px-4">
+            <h2 className="text-3xl font-bold text-center mb-12">Why You Should Buy OSINT Pro</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="space-y-6">
+                <h3 className="text-2xl font-semibold">Unlock the Power of Open-Source Intelligence</h3>
+                <p className="text-muted-foreground">
+                  OSINT Pro provides you with the tools and data you need to make informed decisions, conduct thorough research, and stay ahead in your field.
+                </p>
+                <ul className="space-y-2">
+                  <li className="flex items-center">
+                    <Check className="mr-2 h-5 w-5 text-green-500" />
+                    <span>Access to over 100+ data sources</span>
+                  </li>
+                  <li className="flex items-center">
+                    <Check className="mr-2 h-5 w-5 text-green-500" />
+                    <span>Advanced search algorithms for accurate results</span>
+                  </li>
+                  <li className="flex items-center">
+                    <Check className="mr-2 h-5 w-5 text-green-500" />
+                    <span>Customizable alerts and monitoring</span>
+                  </li>
+                  <li className="flex items-center">
+                    <Check className="mr-2 h-5 w-5 text-green-500" />
+                    <span>Comprehensive reporting and data visualization</span>
+                  </li>
+                </ul>
+              </div>
+              <div className="space-y-6">
+                <h3 className="text-2xl font-semibold">Trusted by Industry Leaders</h3>
+                <p className="text-muted-foreground">
+                  Join thousands of professionals who rely on OSINT Pro for their intelligence needs.
+                </p>
+                <div className="grid grid-cols-2 gap-4">
+                  <Card>
+                    <CardContent className="p-4">
+                      <p className="font-semibold">500+</p>
+                      <p className="text-sm text-muted-foreground">Companies</p>
+                    </CardContent>
+                  </Card>
+                  <Card>
+                    <CardContent className="p-4">
+                      <p className="font-semibold">50,000+</p>
+                      <p className="text-sm text-muted-foreground">Active Users</p>
+                    </CardContent>
+                  </Card>
+                  <Card>
+                    <CardContent className="p-4">
+                      <p className="font-semibold">1M+</p>
+                      <p className="text-sm text-muted-foreground">Searches/Month</p>
+                    </CardContent>
+                  </Card>
+                  <Card>
+                    <CardContent className="p-4">
+                      <p className="font-semibold">99.9%</p>
+                      <p className="text-sm text-muted-foreground">Uptime</p>
+                    </CardContent>
+                  </Card>
+                </div>
+              </div>
+            </div>
+            <div className="mt-12 text-center">
+              <Button size="lg">Start Your Free Trial</Button>
+            </div>
+          </div>
+        </section>
       </main>
-      <footer className="bg-background border-t py-8">
+      <footer className="bg-background py-8">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             <div>
               <h3 className="font-semibold mb-4">Company</h3>
               <ul className="space-y-2">
-                <li><a href="#" className="text-muted-foreground hover:text-foreground">About Us</a></li>
+                <li><a href="#" className="text-muted-fore
+ground hover:text-foreground">About Us</a></li>
                 <li><a href="#" className="text-muted-foreground hover:text-foreground">Careers</a></li>
                 <li><a href="#" className="text-muted-foreground hover:text-foreground">Contact</a></li>
               </ul>
