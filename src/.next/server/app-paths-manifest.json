@@ -2,5 +2,6 @@
   "/page": "app/page.js",
   "/pricing/page": "app/pricing/page.js",
   "/user-profile/page": "app/user-profile/page.js",
-  "/login/page": "app/login/page.js"
+  "/login/page": "app/login/page.js",
+  "/search/page": "app/search/page.js"
 }
