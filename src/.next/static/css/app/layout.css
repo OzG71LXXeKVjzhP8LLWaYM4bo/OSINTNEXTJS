@@ -567,6 +567,9 @@ video {
 .sticky {
   position: sticky;
 }
+.inset-0 {
+  inset: 0px;
+}
 .left-2 {
   left: 0.5rem;
 }
@@ -581,6 +584,9 @@ video {
 }
 .z-50 {
   z-index: 50;
+}
+.m-auto {
+  margin: auto;
 }
 .-mx-1 {
   margin-left: -0.25rem;
@@ -638,6 +644,18 @@ video {
 }
 .hidden {
   display: none;
+}
+.size-40 {
+  width: 10rem;
+  height: 10rem;
+}
+.size-fit {
+  width: fit-content;
+  height: fit-content;
+}
+.size-full {
+  width: 100%;
+  height: 100%;
 }
 .h-10 {
   height: 2.5rem;
@@ -979,6 +997,9 @@ video {
 .opacity-60 {
   opacity: 0.6;
 }
+.opacity-100 {
+  opacity: 1;
+}
 .shadow-lg {
   --tw-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
   --tw-shadow-colored: 0 10px 15px -3px var(--tw-shadow-color), 0 4px 6px -4px var(--tw-shadow-color);
@@ -1033,6 +1054,14 @@ video {
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   transition-duration: 150ms;
 }
+.transition {
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+.ease-linear {
+  transition-timing-function: linear;
+}
 @keyframes enter {
 
   from {
@@ -1046,6 +1075,21 @@ video {
     opacity: var(--tw-exit-opacity, 1);
     transform: translate3d(var(--tw-exit-translate-x, 0), var(--tw-exit-translate-y, 0), 0) scale3d(var(--tw-exit-scale, 1), var(--tw-exit-scale, 1), var(--tw-exit-scale, 1)) rotate(var(--tw-exit-rotate, 0));
   }
+}
+.animate-in {
+  animation-name: enter;
+  animation-duration: 150ms;
+  --tw-enter-opacity: initial;
+  --tw-enter-scale: initial;
+  --tw-enter-rotate: initial;
+  --tw-enter-translate-x: initial;
+  --tw-enter-translate-y: initial;
+}
+.fade-in {
+  --tw-enter-opacity: 0;
+}
+.ease-linear {
+  animation-timing-function: linear;
 }
 
 .file\:border-0::file-selector-button {
