@@ -2,9 +2,5 @@
   "/page": "app/page.js",
   "/search/page": "app/search/page.js",
   "/login/page": "app/login/page.js",
-  "/favicon.ico/route": "app/favicon.ico/route.js",
-  "/user-profile/page": "app/user-profile/page.js",
-  "/previous-searches/page": "app/previous-searches/page.js",
-  "/settings/page": "app/settings/page.js",
-  "/pricing/page": "app/pricing/page.js"
+  "/signup/page": "app/signup/page.js"
 }
