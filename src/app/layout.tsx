@@ -18,7 +18,6 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider>
     <html lang="en" className={inter.className}>
       <body className="flex flex-col min-h-screen">
         <Header />
@@ -26,6 +25,5 @@ export default function RootLayout({
         <Footer />
       </body>
     </html>
-    </ClerkProvider>
   );
 }

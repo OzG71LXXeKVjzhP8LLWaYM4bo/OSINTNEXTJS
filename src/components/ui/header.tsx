@@ -7,7 +7,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Shield, Menu } from "lucide-react";
-import { SignedIn, SignedOut } from "@clerk/nextjs";
 
 export default function Header() {
   return (
@@ -66,7 +65,6 @@ export default function Header() {
           </DropdownMenu>
 
           {/* Profile dropdown moved to the right */}
-          <SignedIn>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost">Account</Button>
@@ -89,7 +87,6 @@ export default function Header() {
                 </Link>
               </DropdownMenuContent>
             </DropdownMenu>
-          </SignedIn>
         </div>
       </div>
     </header>
