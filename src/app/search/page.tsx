@@ -15,13 +15,18 @@ const SearchPage = () => {
 
   // Get the parameters from the URL
   const scantype = searchParams.get('scantype')
-  const ip = searchParams.get('scanname')
+  let ip = searchParams.get('scanname')
 
   // Function to validate the IP format (IPv4 and IPv6)
   const isValidIP = (ip: string) => {
     const ipv4Regex = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/
     const ipv6Regex = /^[0-9a-fA-F:]+$/
     return ipv4Regex.test(ip) || ipv6Regex.test(ip)
+  }
+
+  // Function to clean the IP and remove any extra quotes
+  const cleanIP = (ip: string) => {
+    return ip.replace(/"/g, '').trim()
   }
 
   useEffect(() => {
@@ -38,6 +43,9 @@ const SearchPage = () => {
   }, [loading])
 
   useEffect(() => {
+    // Clean the IP before using it
+    ip = cleanIP(ip || '')
+
     // Check if the scantype is 'ip' and if the IP format is valid
     if (scantype === 'ip' && ip) {
       if (isValidIP(ip)) {
@@ -51,7 +59,7 @@ const SearchPage = () => {
           headers: {
             'Content-Type': 'application/json', // Ensure that Content-Type is set to application/json
           },
-          body: JSON.stringify({ ip }), // Submit the IP data
+          body: JSON.stringify({ ip }), // Submit the cleaned IP data
         })
           .then((response) => {
             console.log('Response status:', response.status) // Log response status
