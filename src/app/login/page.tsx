@@ -1,5 +1,12 @@
+"use client"
+
 import { createClient } from '@supabase/supabase-js'
 import { Auth } from '@supabase/auth-ui-react'
+import {
+  // Import predefined theme
+  ThemeSupa,
+} from '@supabase/auth-ui-shared'
+
 
 const page = () => {
 
@@ -11,7 +18,7 @@ const page = () => {
   return (
     <div className="flex-grow flex flex-col">
         <div className="flex justify-center items-center min-h-screen">
-          <Auth supabaseClient={supabase} />
+          <Auth supabaseClient={supabase} appearance = {{ theme: ThemeSupa}}/>
         </div>
     </div>
   )
