@@ -16,8 +16,7 @@ const SignUpPage = () => {
     <div className="flex justify-center items-center min-h-screen">
       <Auth 
         supabaseClient={supabase} 
-        appearance={{ theme: ThemeSupa }} 
-        providers={['google', 'github']} // Add any OAuth providers you'd like to use
+        appearance={{ theme: ThemeSupa }} // Add any OAuth providers you'd like to use
         view="sign_up" // This explicitly sets the Auth view to Sign-Up
       />
     </div>

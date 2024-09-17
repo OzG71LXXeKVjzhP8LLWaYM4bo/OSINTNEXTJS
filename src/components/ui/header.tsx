@@ -1,3 +1,6 @@
+"use client"
+
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import {
@@ -6,9 +9,34 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Shield, Menu } from "lucide-react";
+import { createClient, SupabaseClient, Session } from "@supabase/supabase-js";
+import { Menu, Shield } from "lucide-react";
 
 export default function Header() {
+  const [session, setSession] = useState<Session | null>(null);
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
+  const supabase: SupabaseClient = createClient(supabaseUrl, supabaseAnonKey);
+
+  useEffect(() => {
+    // Check session on page load
+    const checkSession = async () => {
+      const { data } = await supabase.auth.getSession();
+      setSession(data.session);
+    };
+
+    checkSession();
+
+    // Listen for session changes
+    const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
+      setSession(session);
+    });
+
+    return () => {
+      authListener?.subscription?.unsubscribe();
+    };
+  }, [supabase]);
+
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-14 items-center justify-between">
@@ -27,15 +55,19 @@ export default function Header() {
               </Button>
             </Link>
 
-            {/* Login and Sign Up buttons always visible */}
-            <Link href="/login">
-              <Button variant="ghost" className="hidden sm:inline-flex">
-                Login
-              </Button>
-            </Link>
-            <Link href="/signup">
-              <Button className="hidden sm:inline-flex">Sign Up</Button>
-            </Link>
+            {/* Login and Sign Up buttons are hidden if logged in */}
+            {!session ? (
+              <>
+                <Link href="/login">
+                  <Button variant="ghost" className="hidden sm:inline-flex">
+                    Login
+                  </Button>
+                </Link>
+                <Link href="/signup">
+                  <Button className="hidden sm:inline-flex">Sign Up</Button>
+                </Link>
+              </>
+            ) : null}
           </nav>
 
           <DropdownMenu>
@@ -51,20 +83,25 @@ export default function Header() {
                   <span>Pricing</span>
                 </DropdownMenuItem>
               </Link>
-              <Link href="/login">
-                <DropdownMenuItem asChild>
-                  <span>Login</span>
-                </DropdownMenuItem>
-              </Link>
-              <Link href="/signup">
-                <DropdownMenuItem asChild>
-                  <span>Sign Up</span>
-                </DropdownMenuItem>
-              </Link>
+              {!session ? (
+                <>
+                  <Link href="/login">
+                    <DropdownMenuItem asChild>
+                      <span>Login</span>
+                    </DropdownMenuItem>
+                  </Link>
+                  <Link href="/signup">
+                    <DropdownMenuItem asChild>
+                      <span>Sign Up</span>
+                    </DropdownMenuItem>
+                  </Link>
+                </>
+              ) : null}
             </DropdownMenuContent>
           </DropdownMenu>
 
-          {/* Profile dropdown moved to the right */}
+          {/* Conditionally render Account dropdown when logged in */}
+          {session ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost">Account</Button>
@@ -87,6 +124,7 @@ export default function Header() {
                 </Link>
               </DropdownMenuContent>
             </DropdownMenu>
+          ) : null}
         </div>
       </div>
     </header>
