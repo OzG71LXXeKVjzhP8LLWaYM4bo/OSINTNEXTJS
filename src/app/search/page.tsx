@@ -1,119 +1,53 @@
 "use client"
 
-import AnimatedCircularProgressBar from '@/components/magicui/animated-circular-progress-bar'
-import { useSearchParams } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react';
 
-const SearchPage = () => {
-  const searchParams = useSearchParams()
+interface SearchPageProps {
+  searchParams: Record<string, string | undefined>;
+}
 
-  // State for API result, loading, and error
-  const [result, setResult] = useState<any>(null)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string>('')
-  const [progress, setProgress] = useState(0)
-
-  // Get the parameters from the URL
-  const scantype = searchParams.get('scantype') || ''
-  let ip = searchParams.get('scanname') || ''
+const SearchPage = async ({ searchParams }: SearchPageProps) => {
+  const scantype = searchParams?.scantype || '';
+  const scanname = searchParams?.scanname || '';
 
   // Function to validate the IP format (IPv4 and IPv6)
   const isValidIP = (ip: string) => {
-    const ipv4Regex = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/
-    const ipv6Regex = /^[0-9a-fA-F:]+$/
-    return ipv4Regex.test(ip) || ipv6Regex.test(ip)
+    const ipv4Regex = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+    const ipv6Regex = /^[0-9a-fA-F:]+$/;
+    return ipv4Regex.test(ip) || ipv6Regex.test(ip);
+  };
+
+  if (!scantype || !scanname) {
+    return (
+      <div>
+        <h1>No data available</h1>
+      </div>
+    );
   }
 
-  // Function to clean the IP and remove any extra quotes
-  const cleanIP = (ip: string) => ip.replace(/"/g, '').trim()
+  const cleanedIP = scanname.replace(/"/g, '').trim();
+  if (scantype === 'ip' && isValidIP(cleanedIP)) {
+    // Fetch data on the server
+    const res = await fetch('https://www.vitaglow.fit/api/ipdata', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ip: cleanedIP }),
+    });
+    const data = await res.json();
 
-  useEffect(() => {
-    let interval: NodeJS.Timeout
+    return (
+      <div>
+        <h1>Search Results</h1>
+        <pre>{JSON.stringify(data, null, 2)}</pre>
+      </div>
+    );
+  } else {
+    return (
+      <div>
+        <h1>Invalid IP format</h1>
+      </div>
+    );
+  }
+};
 
-    if (loading) {
-      // Slowly increment progress while loading
-      interval = setInterval(() => {
-        setProgress((prev) => (prev < 90 ? prev + 5 : prev)) // Increment until 90%
-      }, 500)
-    }
-
-    return () => clearInterval(interval) // Clear interval on component unmount
-  }, [loading])
-
-  useEffect(() => {
-    if (!ip || !scantype) return // Early return if no scanname or scantype
-
-    // Clean the IP before using it
-    ip = cleanIP(ip)
-
-    // Check if the scantype is 'ip' and if the IP format is valid
-    if (scantype === 'ip' && ip) {
-      if (isValidIP(ip)) {
-        setLoading(true)
-        setError('')
-        console.log('Submitting request to API with IP:', ip)
-
-        // Make the POST request
-        fetch('https://www.vitaglow.fit/api/ipdata', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ ip }),
-        })
-          .then((response) => {
-            if (!response.ok) {
-              throw new Error(`API request failed with status ${response.status}`)
-            }
-            return response.json()
-          })
-          .then((data) => {
-            setResult(data)
-            setLoading(false)
-            // Quickly jump to 100% progress
-            const start = Date.now()
-            const duration = 2000
-            const interval = setInterval(() => {
-              const elapsed = Date.now() - start
-              const nextProgress = Math.min(100, 90 + (elapsed / duration) * 10)
-              setProgress(nextProgress)
-              if (nextProgress === 100) clearInterval(interval)
-            }, 100)
-          })
-          .catch((error) => {
-            setError('Failed to fetch data from the API: ' + error.message)
-            setLoading(false)
-          })
-      } else {
-        setError('Invalid IP format')
-      }
-    }
-  }, [scantype, ip])
-
-  return (
-    <div>
-      <h1>Search Results</h1>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-      {loading || progress < 100 ? (
-        <div className="flex justify-center items-center min-h-screen">
-          <AnimatedCircularProgressBar
-            max={100}
-            min={0}
-            value={progress}
-            gaugePrimaryColor="rgb(79 70 229)"
-            gaugeSecondaryColor="rgba(0, 0, 0, 0.1)"
-          />
-        </div>
-      ) : result ? (
-        <div>
-          <h2>IP Data</h2>
-          <pre>{JSON.stringify(result, null, 2)}</pre>
-        </div>
-      ) : (
-        <p>No data available</p>
-      )}
-    </div>
-  )
-}
-
-export default SearchPage
+export default SearchPage;
