@@ -42,13 +42,7 @@ const Header = () => {
 
   const handleLogout = async () => {
     const { error } = await supabase.auth.signOut();
-    if (error) {
-      console.error("Error during logout:", error.message);
-    } else {
-      setSession(null);  // Reset session
-      localStorage.clear();  // Clear local storage
-      router.push("/login");  // Redirect to login page
-    }
+    router.push("/login");
   };
 
   if (loading) return null;  // Prevent rendering until session is checked
@@ -88,7 +82,7 @@ const Header = () => {
           {session ? (
             <>
               {/* Separate Logout Button */}
-              <Button variant="ghost" onClick={handleLogout}>
+              <Button variant="ghost" onClick={() => handleLogout}>
                 Logout
               </Button>
             </>
