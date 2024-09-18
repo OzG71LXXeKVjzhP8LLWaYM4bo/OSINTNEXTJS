@@ -1,34 +1,37 @@
-"use client"
+"use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { createClient, SupabaseClient, Session } from "@supabase/supabase-js";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
+import { Button } from "./button";
+import { Menu, Shield } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { createClient, SupabaseClient, Session } from "@supabase/supabase-js";
-import { Menu, Shield } from "lucide-react";
+} from "./dropdown-menu";
 
-export default function Header() {
+// Custom Header component with session handling
+const Header = () => {
   const [session, setSession] = useState<Session | null>(null);
+  const [loading, setLoading] = useState(true);
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
   const supabase: SupabaseClient = createClient(supabaseUrl, supabaseAnonKey);
+  const router = useRouter();
 
   useEffect(() => {
-    // Check session on page load
     const checkSession = async () => {
       const { data } = await supabase.auth.getSession();
       setSession(data.session);
+      setLoading(false); // Session check done
     };
 
     checkSession();
 
-    // Listen for session changes
-    const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
+    const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
     });
 
@@ -36,6 +39,19 @@ export default function Header() {
       authListener?.subscription?.unsubscribe();
     };
   }, [supabase]);
+
+  const handleLogout = async () => {
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      console.error("Error during logout:", error.message);
+    } else {
+      setSession(null);  // Reset session
+      localStorage.clear();  // Clear local storage
+      router.push("/login");  // Redirect to login page
+    }
+  };
+
+  if (loading) return null;  // Prevent rendering until session is checked
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -55,7 +71,6 @@ export default function Header() {
               </Button>
             </Link>
 
-            {/* Login and Sign Up buttons are hidden if logged in */}
             {!session ? (
               <>
                 <Link href="/login">
@@ -70,63 +85,28 @@ export default function Header() {
             ) : null}
           </nav>
 
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="sm:hidden">
-                <Menu className="h-5 w-5" />
-                <span className="sr-only">Toggle menu</span>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <Link href="/pricing">
-                <DropdownMenuItem asChild>
-                  <span>Pricing</span>
-                </DropdownMenuItem>
-              </Link>
-              {!session ? (
-                <>
-                  <Link href="/login">
-                    <DropdownMenuItem asChild>
-                      <span>Login</span>
-                    </DropdownMenuItem>
-                  </Link>
-                  <Link href="/signup">
-                    <DropdownMenuItem asChild>
-                      <span>Sign Up</span>
-                    </DropdownMenuItem>
-                  </Link>
-                </>
-              ) : null}
-            </DropdownMenuContent>
-          </DropdownMenu>
-
-          {/* Conditionally render Account dropdown when logged in */}
           {session ? (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost">Account</Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <Link href="/user-profile">
-                  <DropdownMenuItem asChild>
-                    <span>Profile</span>
-                  </DropdownMenuItem>
-                </Link>
-                <Link href="/previous-searches">
-                  <DropdownMenuItem asChild>
-                    <span>Previous Searches</span>
-                  </DropdownMenuItem>
-                </Link>
-                <Link href="/settings">
-                  <DropdownMenuItem asChild>
-                    <span>Settings</span>
-                  </DropdownMenuItem>
-                </Link>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <>
+              {/* Separate Logout Button */}
+              <Button variant="ghost" onClick={handleLogout}>
+                Logout
+              </Button>
+            </>
           ) : null}
         </div>
       </div>
     </header>
   );
-}
+};
+
+const Page = () => {
+  return (
+    <div className="flex-grow flex flex-col">
+      {/* Custom Header */}
+      <Header />
+      {/* Add your page content here */}
+    </div>
+  );
+};
+
+export default Page;
