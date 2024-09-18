@@ -45,7 +45,7 @@ const Page = () => {
         style={{ display: 'none' }}
         className="fixed bottom-4 left-4 w-96 z-50 bg-green-100 border-green-500 text-green-700 p-4 rounded-md shadow-lg"
       >
-        <Alert variant="success">
+        <Alert>
           <AlertTitle>Success</AlertTitle>
           <AlertDescription>You are logged in!</AlertDescription>
         </Alert>
