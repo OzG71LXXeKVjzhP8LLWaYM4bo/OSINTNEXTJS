@@ -17,9 +17,14 @@ const SearchPage = ({ searchParams }: SearchPageProps) => {
   const [data, setData] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
 
+  // Check session and authentication
   useEffect(() => {
     const checkSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      console.log('Session:', session); // Debugging: Log session to verify if user is authenticated
+      if (sessionError) {
+        console.error('Error fetching session:', sessionError); // Log any session errors
+      }
       if (!session) {
         router.push('/sign-in'); // Redirect if not authenticated
       }
@@ -27,17 +32,22 @@ const SearchPage = ({ searchParams }: SearchPageProps) => {
     checkSession();
   }, [router]);
 
+  // Fetch data from the API
   useEffect(() => {
     const fetchData = async (ip: string) => {
       try {
+        console.log('Fetching data for IP:', ip); // Debugging: Log the IP being fetched
         const res = await fetch('https://www.vitaglow.fit/api/ipdata', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ ip }),
         });
+
         const result = await res.json();
+        console.log('API Response:', result); // Debugging: Log the API response
         setData(result);
       } catch (error) {
+        console.error('Error fetching data:', error); // Debugging: Log fetch error
         setError('Failed to fetch data');
       }
     };
@@ -72,7 +82,7 @@ const SearchPage = ({ searchParams }: SearchPageProps) => {
   return (
     <div>
       <h1>Search Results</h1>
-      <pre>{JSON.stringify(data, null, 2)}</pre>
+      <pre>{JSON.stringify(data, null, 2)}</pre> {/* Debugging: Display the data */}
     </div>
   );
 };
