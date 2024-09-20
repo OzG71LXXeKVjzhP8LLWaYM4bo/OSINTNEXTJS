@@ -27,18 +27,18 @@ export default function SearchSection() {
   })
 
   const [useCase, setUseCase] = useState<"passive" | "all">("passive")
-  const [loading, setLoading] = useState(false) // Add loading flag
+  const [loading, setLoading] = useState(false)
 
   const router = useRouter()
 
   const handleSearch = () => {
-    if (loading) return; // Prevent multiple clicks
-    
-    const query = searchQueries[searchType] // This is what the user typed in the input field
+    if (loading) return // Prevent multiple clicks when loading
+
+    const query = searchQueries[searchType] // Get the query value
     if (query) {
-      setLoading(true) // Set loading to true to prevent multiple clicks
+      setLoading(true) // Prevent multiple search attempts
+      // Redirect immediately to the new route with parameters
       router.push(`/search?scanname=${query}&scantarget=${query}&scantype=${searchType}&usecase=${useCase}`)
-      setLoading(false) // Reset loading after the redirection
     }
   }
 
