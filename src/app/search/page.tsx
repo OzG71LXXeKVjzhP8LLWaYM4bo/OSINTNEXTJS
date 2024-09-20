@@ -1,8 +1,5 @@
-'use client';
-
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
+import { redirect } from 'next/navigation';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
@@ -12,75 +9,53 @@ interface SearchPageProps {
   searchParams: Record<string, string | undefined>;
 }
 
-const SearchPage = ({ searchParams }: SearchPageProps) => {
-  const router = useRouter();
-  const [data, setData] = useState<any>(null);
-  const [error, setError] = useState<string | null>(null);
+const SearchPage = async ({ searchParams }: SearchPageProps) => {
+  // Authenticate user directly without useEffect
+  const { data: { user }, error: authError } = await supabase.auth.getUser();
+  
+  // If user is not authenticated, redirect to sign-in page
+  if (!user) {
+    redirect('/sign-in');
+    return;
+  }
 
-  // Check if the user is authenticated directly
-  useEffect(() => {
-    const checkAuth = async () => {
-      const { data: user, error: authError } = await supabase.auth.getUser();
-      console.log('Authenticated User:', user); // Debugging: Check the user info
-      if (authError || !user) {
-        console.error('Auth error:', authError);
-        router.push('/sign-in'); // Redirect if not authenticated
-      }
-    };
-    checkAuth();
-  }, [router]);
+  // Extract scantype and scanname from searchParams
+  const scantype = searchParams?.scantype || '';
+  const scanname = searchParams?.scanname || '';
 
-  // Fetch data from the API
-  useEffect(() => {
-    const fetchData = async (ip: string) => {
-      try {
-        console.log('Fetching data for IP:', ip); // Debugging: Log the IP being fetched
-        const res = await fetch('https://www.vitaglow.fit/api/ipdata', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ ip }),
-        });
+  // Validate IP address
+  const isValidIP = (ip: string) => {
+    const ipv4Regex = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+    const ipv6Regex = /^[0-9a-fA-F:]+$/;
+    return ipv4Regex.test(ip) || ipv6Regex.test(ip);
+  };
 
-        const result = await res.json();
-        console.log('API Response:', result); // Debugging: Log the API response
-        setData(result);
-      } catch (error) {
-        console.error('Error fetching data:', error); // Debugging: Log fetch error
-        setError('Failed to fetch data');
-      }
-    };
+  // Clean up the scanname
+  const cleanedIP = scanname.replace(/"/g, '').trim();
 
-    const scantype = searchParams?.scantype || '';
-    const scanname = searchParams?.scanname || '';
-    const cleanedIP = scanname.replace(/"/g, '').trim();
+  // Handle the case when scantype is 'ip' and it's a valid IP address
+  if (scantype === 'ip' && isValidIP(cleanedIP)) {
+    // Fetch data from API directly without useEffect
+    const res = await fetch('https://www.vitaglow.fit/api/ipdata', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ip: cleanedIP }),
+    });
 
-    // Validate IP and fetch data if valid
-    const isValidIP = (ip: string) => {
-      const ipv4Regex = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
-      const ipv6Regex = /^[0-9a-fA-F:]+$/;
-      return ipv4Regex.test(ip) || ipv6Regex.test(ip);
-    };
+    const data = await res.json();
 
-    if (scantype === 'ip' && isValidIP(cleanedIP)) {
-      fetchData(cleanedIP); // Call fetchData only if valid IP
-    } else if (scantype && !isValidIP(cleanedIP)) {
-      setError('Invalid IP format');
-    }
-
-  }, [searchParams]);
-
-  if (error) {
     return (
       <div>
-        <h1>{error}</h1>
+        <h1>Search Results</h1>
+        <pre>{JSON.stringify(data, null, 2)}</pre>
       </div>
     );
   }
 
+  // If IP is invalid, return an error message
   return (
     <div>
-      <h1>Search Results</h1>
-      <pre>{JSON.stringify(data, null, 2)}</pre> {/* Debugging: Display the data */}
+      <h1>Invalid IP format</h1>
     </div>
   );
 };
