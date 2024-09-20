@@ -4,9 +4,9 @@ import { useState, ChangeEvent } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
-import { Phone, Mail, User, Globe, Cpu, Bitcoin, Search, ChevronDown } from "lucide-react"
+import { Phone, Mail, User, Globe, Cpu, Bitcoin, Search } from "lucide-react"
 import { useRouter } from "next/navigation"
-import { Switch } from "@/components/ui/switch" // Assuming you're using a Switch component
+import { Switch } from "@/components/ui/switch" 
 
 export default function SearchSection() {
   const [searchType, setSearchType] = useState<keyof typeof searchQueries>("phone")
@@ -26,16 +26,19 @@ export default function SearchSection() {
     bitcoin: "",
   })
 
-  // State to manage the use case (passive or all)
   const [useCase, setUseCase] = useState<"passive" | "all">("passive")
+  const [loading, setLoading] = useState(false) // Add loading flag
 
   const router = useRouter()
 
-  // Handle search submission including scanname, scantarget, scantype, and usecase
   const handleSearch = () => {
+    if (loading) return; // Prevent multiple clicks
+    
     const query = searchQueries[searchType] // This is what the user typed in the input field
     if (query) {
+      setLoading(true) // Set loading to true to prevent multiple clicks
       router.push(`/search?scanname=${query}&scantarget=${query}&scantype=${searchType}&usecase=${useCase}`)
+      setLoading(false) // Reset loading after the redirection
     }
   }
 
@@ -80,7 +83,7 @@ export default function SearchSection() {
                   onChange={(e) => handleInputChange(e, "phone")}
                 />
               </div>
-              <Button type="button" size="lg" className="w-full sm:w-auto" onClick={handleSearch}>
+              <Button type="button" size="lg" className="w-full sm:w-auto" onClick={handleSearch} disabled={loading}>
                 <Search className="mr-2 h-4 w-4" /> Search
               </Button>
             </div>
@@ -98,7 +101,7 @@ export default function SearchSection() {
                   onChange={(e) => handleInputChange(e, "email")}
                 />
               </div>
-              <Button type="button" size="lg" className="w-full sm:w-auto" onClick={handleSearch}>
+              <Button type="button" size="lg" className="w-full sm:w-auto" onClick={handleSearch} disabled={loading}>
                 <Search className="mr-2 h-4 w-4" /> Search
               </Button>
             </div>
@@ -116,7 +119,7 @@ export default function SearchSection() {
                   onChange={(e) => handleInputChange(e, "username")}
                 />
               </div>
-              <Button type="button" size="lg" className="w-full sm:w-auto" onClick={handleSearch}>
+              <Button type="button" size="lg" className="w-full sm:w-auto" onClick={handleSearch} disabled={loading}>
                 <Search className="mr-2 h-4 w-4" /> Search
               </Button>
             </div>
@@ -134,7 +137,7 @@ export default function SearchSection() {
                   onChange={(e) => handleInputChange(e, "domain")}
                 />
               </div>
-              <Button type="button" size="lg" className="w-full sm:w-auto" onClick={handleSearch}>
+              <Button type="button" size="lg" className="w-full sm:w-auto" onClick={handleSearch} disabled={loading}>
                 <Search className="mr-2 h-4 w-4" /> Search
               </Button>
             </div>
@@ -152,7 +155,7 @@ export default function SearchSection() {
                   onChange={(e) => handleInputChange(e, "ip")}
                 />
               </div>
-              <Button type="button" size="lg" className="w-full sm:w-auto" onClick={handleSearch}>
+              <Button type="button" size="lg" className="w-full sm:w-auto" onClick={handleSearch} disabled={loading}>
                 <Search className="mr-2 h-4 w-4" /> Search
               </Button>
             </div>
@@ -170,7 +173,7 @@ export default function SearchSection() {
                   onChange={(e) => handleInputChange(e, "bitcoin")}
                 />
               </div>
-              <Button type="button" size="lg" className="w-full sm:w-auto" onClick={handleSearch}>
+              <Button type="button" size="lg" className="w-full sm:w-auto" onClick={handleSearch} disabled={loading}>
                 <Search className="mr-2 h-4 w-4" /> Search
               </Button>
             </div>
