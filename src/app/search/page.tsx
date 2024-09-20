@@ -14,8 +14,6 @@ interface SearchPageProps {
 
 const SearchPage = ({ searchParams }: SearchPageProps) => {
   const router = useRouter();
-  const [loading, setLoading] = useState(true);
-  const [authenticated, setAuthenticated] = useState(false);
   const [data, setData] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -23,11 +21,8 @@ const SearchPage = ({ searchParams }: SearchPageProps) => {
     const checkSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
-        router.push('/sign-in');
-      } else {
-        setAuthenticated(true);
+        router.push('/sign-in'); // Redirect if not authenticated
       }
-      setLoading(false);
     };
     checkSession();
   }, [router]);
@@ -65,14 +60,6 @@ const SearchPage = ({ searchParams }: SearchPageProps) => {
     }
 
   }, [searchParams]);
-
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
-  if (!authenticated) {
-    return null;
-  }
 
   if (error) {
     return (
