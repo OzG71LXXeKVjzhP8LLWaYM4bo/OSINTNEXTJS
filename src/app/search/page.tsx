@@ -1,7 +1,7 @@
 "use client"
 
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
-import { redirect } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
@@ -12,13 +12,15 @@ interface SearchPageProps {
 }
 
 const SearchPage = async ({ searchParams }: SearchPageProps) => {
-  // Authenticate user directly without useEffect
+  const router = useRouter();
+
+  // Authenticate user directly
   const { data: { user }, error: authError } = await supabase.auth.getUser();
   
-  // If user is not authenticated, redirect to sign-in page
+  // If user is not authenticated, redirect to sign-in page using router.push
   if (!user) {
-    redirect('/sign-in');
-    return;
+    router.push('/sign-in');
+    return null;
   }
 
   // Extract scantype and scanname from searchParams
@@ -37,7 +39,7 @@ const SearchPage = async ({ searchParams }: SearchPageProps) => {
 
   // Handle the case when scantype is 'ip' and it's a valid IP address
   if (scantype === 'ip' && isValidIP(cleanedIP)) {
-    // Fetch data from API directly without useEffect
+    // Fetch data from API directly
     const res = await fetch('https://www.vitaglow.fit/api/ipdata', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
