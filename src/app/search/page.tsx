@@ -1,4 +1,4 @@
-'use client';
+'use client'; // Ensure this is a client-side component
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -16,21 +16,26 @@ const SearchPage = ({ searchParams }: SearchPageProps) => {
   const router = useRouter();
   const [data, setData] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true); // Add loading state to control renders
+  const [loading, setLoading] = useState(true);
 
-  // Authenticate user and fetch data in one effect to avoid multiple calls
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Authenticate user
+        // Step 1: Authenticate user
         const { data: { user }, error: authError } = await supabase.auth.getUser();
 
-        if (authError || !user) {
+        // Log auth status for debugging
+        console.log('User:', user);
+        if (authError) {
+          console.error('Auth error:', authError);
+        }
+
+        if (!user) {
           router.push('/sign-in'); // Redirect if not authenticated
           return;
         }
 
-        // Process search params if user is authenticated
+        // Step 2: Process search params
         const scantype = searchParams?.scantype || '';
         const scanname = searchParams?.scanname || '';
         const cleanedIP = scanname.replace(/"/g, '').trim();
@@ -43,32 +48,44 @@ const SearchPage = ({ searchParams }: SearchPageProps) => {
         };
 
         if (scantype === 'ip' && isValidIP(cleanedIP)) {
-          // Fetch data from the API
+          // Step 3: Fetch data from the API
+          console.log('Fetching data for IP:', cleanedIP); // Log the IP being sent to the API
           const res = await fetch('https://www.vitaglow.fit/api/ipdata', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+              'Content-Type': 'application/json',
+            },
             body: JSON.stringify({ ip: cleanedIP }),
           });
 
+          // Step 4: Handle API response
+          if (!res.ok) {
+            throw new Error(`API request failed with status ${res.status}`);
+          }
+
           const result = await res.json();
+          console.log('API Response:', result); // Log the API response
           setData(result);
         } else {
           setError('Invalid IP format');
         }
-      } catch (error) {
+      } catch (err) {
+        console.error('Error during API call:', err);
         setError('Failed to fetch data');
       } finally {
-        setLoading(false); // Ensure we stop loading after the API call
+        setLoading(false);
       }
     };
 
-    fetchData();
-  }, [router, searchParams]); // Only run the effect once with correct dependencies
+    fetchData(); // Trigger the API call only once
+  }, [router, searchParams]); // Make sure this effect runs only when `router` or `searchParams` change
 
+  // Loading state to avoid displaying before data is ready
   if (loading) {
-    return <div>Loading...</div>; // Show a loading state while waiting for API response
+    return <div>Loading...</div>;
   }
 
+  // Display error if there is one
   if (error) {
     return (
       <div>
@@ -77,6 +94,7 @@ const SearchPage = ({ searchParams }: SearchPageProps) => {
     );
   }
 
+  // Display data once it's fetched
   return (
     <div>
       <h1>Search Results</h1>
