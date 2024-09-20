@@ -17,19 +17,17 @@ const SearchPage = ({ searchParams }: SearchPageProps) => {
   const [data, setData] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
 
-  // Check session and authentication
+  // Check if the user is authenticated directly
   useEffect(() => {
-    const checkSession = async () => {
-      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-      console.log('Session:', session); // Debugging: Log session to verify if user is authenticated
-      if (sessionError) {
-        console.error('Error fetching session:', sessionError); // Log any session errors
-      }
-      if (!session) {
+    const checkAuth = async () => {
+      const { data: user, error: authError } = await supabase.auth.getUser();
+      console.log('Authenticated User:', user); // Debugging: Check the user info
+      if (authError || !user) {
+        console.error('Auth error:', authError);
         router.push('/sign-in'); // Redirect if not authenticated
       }
     };
-    checkSession();
+    checkAuth();
   }, [router]);
 
   // Fetch data from the API
@@ -64,7 +62,7 @@ const SearchPage = ({ searchParams }: SearchPageProps) => {
     };
 
     if (scantype === 'ip' && isValidIP(cleanedIP)) {
-      fetchData(cleanedIP);
+      fetchData(cleanedIP); // Call fetchData only if valid IP
     } else if (scantype && !isValidIP(cleanedIP)) {
       setError('Invalid IP format');
     }
