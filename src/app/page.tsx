@@ -8,6 +8,7 @@ export default function Component() {
   return (
     <div className="flex-grow flex flex-col">
       <SearchSection />
+      
       <WhyChoose />
       <PricingSection />
       <TrustedByIndustryLeaders />
