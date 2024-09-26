@@ -31,13 +31,7 @@ const SearchPage: React.FC<SearchPageProps> = ({ searchParams }) => {
         const scanname = searchParams?.scanname ?? '';
         const cleanedIP = scanname.trim();
 
-        const isValidIP = (ip: string): boolean => {
-          const ipv4Regex = /^(\d{1,3}\.){3}\d{1,3}$/;
-          const ipv6Regex = /^([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}$/;
-          return ipv4Regex.test(ip) || ipv6Regex.test(ip);
-        };
-
-        if (scantype === 'ip' && isValidIP(cleanedIP)) {
+        if (scantype === 'ip') {
           const res = await fetch('https://www.vitaglow.fit/api/ipdata', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -51,7 +45,7 @@ const SearchPage: React.FC<SearchPageProps> = ({ searchParams }) => {
           const result = await res.json();
           setData(result);
         } else {
-          setError('Invalid IP format');
+          setError('Invalid scan type');
         }
       } catch (err) {
         console.error('Error during API call:', err);
